@@ -3,6 +3,7 @@ package kz.hackquest.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import kz.hackquest.model.UserRole;
 
 @Entity
 @Table(name = "users")
@@ -20,14 +21,15 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    private String role;
+    @Enumerated(EnumType.STRING)
+private UserRole role;
     private Integer points;
     private Integer level;
     private LocalDateTime createdAt;
 
     @PrePersist
 void onCreate() {
-    if (role == null) role = "PLAYER";
+    if (role == null) role = UserRole.PLAYER;
     if (points == null) points = 0;
     if (level == null) level = 1;
     createdAt = LocalDateTime.now();

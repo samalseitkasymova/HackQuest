@@ -81,13 +81,25 @@ export default function DashboardLayout() {
         <div className="p-4 border-t border-[#7B61FF]/20">
           <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#151B2E]">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#00F5FF] to-[#7B61FF] flex items-center justify-center text-white font-bold">
-              JD
-            </div>
-            <div className="flex-1">
-              <div className="text-sm font-medium text-white">John Doe</div>
-              <div className="text-xs text-gray-400">Junior Hacker</div>
-            </div>
-            <button className="text-gray-400 hover:text-[#00F5FF] transition-colors">
+  {user?.username?.slice(0, 2).toUpperCase()}
+</div>
+
+<div className="flex-1">
+  <div className="text-sm font-medium text-white">
+    {user?.username}
+  </div>
+
+  <div className="text-xs text-gray-400">
+    {user?.role === "ADMIN" ? "Администратор" : "Игрок"}
+  </div>
+</div>
+            <button
+  onClick={() => {
+    localStorage.removeItem("hq_user");
+    window.location.href = "/login";
+  }}
+  className="text-gray-400 hover:text-[#00F5FF] transition-colors"
+>
               <LogOut className="w-5 h-5" />
             </button>
           </div>

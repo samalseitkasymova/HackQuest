@@ -2,6 +2,8 @@ import { motion } from "motion/react";
 import { Users, BookOpen, Target, TrendingUp, Activity, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import { useEffect, useState } from "react";
+import { api } from "../services/api";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 
 const userActivityData = [
@@ -31,6 +33,89 @@ const recentActivities = [
 ];
 
 export default function Admin() {
+  const [questions, setQuestions] = useState<any[]>([]);
+
+  const [showQuestionForm, setShowQuestionForm] = useState(false);
+
+const [questionForm, setQuestionForm] = useState({
+  questionText: "",
+  optionA: "",
+  optionB: "",
+  optionC: "",
+  optionD: "",
+  correctAnswer: "A",
+  difficulty: "Easy",
+});
+
+const [showMissionForm, setShowMissionForm] = useState(false);
+const [missions, setMissions] = useState<any[]>([]);
+
+const [missionForm, setMissionForm] = useState({
+  title: "",
+  description: "",
+  category: "",
+  difficulty: "Новичок",
+  xp: 500,
+  duration: 15,
+  completed: false,
+  unlocked: true,
+});
+
+const loadMissions = async () => {
+  const data = await api.getMissions();
+  setMissions(data);
+};
+
+const createMission = async () => {
+  await api.createMission(missionForm);
+
+  setMissionForm({
+    title: "",
+    description: "",
+    category: "",
+    difficulty: "Новичок",
+    xp: 500,
+    duration: 15,
+    completed: false,
+    unlocked: true,
+  });
+
+  loadMissions();
+};
+
+const deleteMission = async (id: number) => {
+  await api.deleteMission(id);
+  loadMissions();
+};
+
+const loadQuestions = async () => {
+  const data = await api.getQuestions();
+  setQuestions(data);
+};
+
+useEffect(() => {
+  loadQuestions();
+  loadMissions();
+}, []);
+
+const createQuestion = async () => {
+  await api.createQuestion(questionForm);
+  setQuestionForm({
+    questionText: "",
+    optionA: "",
+    optionB: "",
+    optionC: "",
+    optionD: "",
+    correctAnswer: "A",
+    difficulty: "Easy",
+  });
+  loadQuestions();
+};
+
+const deleteQuestion = async (id: number) => {
+  await api.deleteQuestion(id);
+  loadQuestions();
+};
   return (
     <div className="p-8">
       {/* Header */}
@@ -85,12 +170,14 @@ export default function Admin() {
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="analytics" className="space-y-6">
-        <TabsList className="bg-[#1A2234] border border-[#7B61FF]/20">
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="content">Content</TabsTrigger>
-          <TabsTrigger value="activity">Activity Logs</TabsTrigger>
-        </TabsList>
+
+  <TabsList className="bg-[#1A2234] border border-[#7B61FF]/20">
+    <TabsTrigger value="analytics">Analytics</TabsTrigger>
+    <TabsTrigger value="users">Users</TabsTrigger>
+    <TabsTrigger value="content">Content</TabsTrigger>
+    <TabsTrigger value="activity">Activity Logs</TabsTrigger>
+  </TabsList>
+
 
         {/* Analytics Tab */}
         <TabsContent value="analytics" className="space-y-6">
@@ -191,12 +278,118 @@ export default function Admin() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <button className="w-full py-3 bg-gradient-to-r from-[#00F5FF]/20 to-[#7B61FF]/20 hover:from-[#00F5FF]/30 hover:to-[#7B61FF]/30 border border-[#00F5FF]/30 rounded-xl text-white font-medium transition-all">
-                    + Create New Test
-                  </button>
-                  <div className="text-gray-400 text-sm text-center py-8">
-                    Test library and editor would be displayed here
-                  </div>
+                  <button
+  onClick={() => setShowQuestionForm(!showQuestionForm)}
+  className="w-full py-3 bg-gradient-to-r from-[#00F5FF]/20 to-[#7B61FF]/20 hover:from-[#00F5FF]/30 hover:to-[#7B61FF]/30 border border-[#00F5FF]/30 rounded-xl text-white font-medium transition-all"
+>
+  + Create New Test
+</button>
+<div className="text-gray-400 text-sm text-center py-8">
+  Test library and editor would be displayed here
+</div>
+{showQuestionForm && (
+  <div className="space-y-4">
+
+    <input
+      className="w-full p-3 rounded-xl bg-[#151B2E] text-white"
+      placeholder="Question text"
+      value={questionForm.questionText}
+      onChange={(e) =>
+        setQuestionForm({
+          ...questionForm,
+          questionText: e.target.value,
+        })
+      }
+    />
+
+    <input
+      className="w-full p-3 rounded-xl bg-[#151B2E] text-white"
+      placeholder="Option A"
+      value={questionForm.optionA}
+      onChange={(e) =>
+        setQuestionForm({
+          ...questionForm,
+          optionA: e.target.value,
+        })
+      }
+    />
+
+    <input
+      className="w-full p-3 rounded-xl bg-[#151B2E] text-white"
+      placeholder="Option B"
+      value={questionForm.optionB}
+      onChange={(e) =>
+        setQuestionForm({
+          ...questionForm,
+          optionB: e.target.value,
+        })
+      }
+    />
+
+    <input
+      className="w-full p-3 rounded-xl bg-[#151B2E] text-white"
+      placeholder="Option C"
+      value={questionForm.optionC}
+      onChange={(e) =>
+        setQuestionForm({
+          ...questionForm,
+          optionC: e.target.value,
+        })
+      }
+    />
+
+    <input
+      className="w-full p-3 rounded-xl bg-[#151B2E] text-white"
+      placeholder="Option D"
+      value={questionForm.optionD}
+      onChange={(e) =>
+        setQuestionForm({
+          ...questionForm,
+          optionD: e.target.value,
+        })
+      }
+    />
+
+    <select
+      className="w-full p-3 rounded-xl bg-[#151B2E] text-white"
+      value={questionForm.correctAnswer}
+      onChange={(e) =>
+        setQuestionForm({
+          ...questionForm,
+          correctAnswer: e.target.value,
+        })
+      }
+    >
+      <option value="A">Correct: A</option>
+      <option value="B">Correct: B</option>
+      <option value="C">Correct: C</option>
+      <option value="D">Correct: D</option>
+    </select>
+
+    <select
+      className="w-full p-3 rounded-xl bg-[#151B2E] text-white"
+      value={questionForm.difficulty}
+      onChange={(e) =>
+        setQuestionForm({
+          ...questionForm,
+          difficulty: e.target.value,
+        })
+      }
+    >
+      <option value="Easy">Easy</option>
+      <option value="Medium">Medium</option>
+      <option value="Hard">Hard</option>
+    </select>
+
+    <button
+      onClick={createQuestion}
+      className="w-full py-3 rounded-xl bg-gradient-to-r from-[#00F5FF] to-[#7B61FF] text-white"
+    >
+      Save Question
+    </button>
+
+  </div>
+)}
                 </div>
               </CardContent>
             </Card>
@@ -210,12 +403,84 @@ export default function Admin() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <button className="w-full py-3 bg-gradient-to-r from-[#00FF9D]/20 to-[#7B61FF]/20 hover:from-[#00FF9D]/30 hover:to-[#7B61FF]/30 border border-[#00FF9D]/30 rounded-xl text-white font-medium transition-all">
-                    + Create New Mission
-                  </button>
+                  <button
+  onClick={() => setShowMissionForm(!showMissionForm)}
+  className="w-full py-3 bg-gradient-to-r from-[#00FF9D]/20 to-[#7B61FF]/20 hover:from-[#00FF9D]/30 hover:to-[#7B61FF]/30 border border-[#00FF9D]/30 rounded-xl text-white font-medium transition-all"
+>
+  + Создать новую миссию
+</button>
                   <div className="text-gray-400 text-sm text-center py-8">
                     Mission library and editor would be displayed here
                   </div>
+                  {showMissionForm && (
+  <div className="space-y-4 mt-4">
+    <input
+      className="w-full p-3 rounded-xl bg-[#151B2E] text-white"
+      placeholder="Название миссии"
+      value={missionForm.title}
+      onChange={(e) =>
+        setMissionForm({ ...missionForm, title: e.target.value })
+      }
+    />
+
+    <textarea
+      className="w-full p-3 rounded-xl bg-[#151B2E] text-white"
+      placeholder="Описание миссии"
+      value={missionForm.description}
+      onChange={(e) =>
+        setMissionForm({ ...missionForm, description: e.target.value })
+      }
+    />
+
+    <input
+      className="w-full p-3 rounded-xl bg-[#151B2E] text-white"
+      placeholder="Категория"
+      value={missionForm.category}
+      onChange={(e) =>
+        setMissionForm({ ...missionForm, category: e.target.value })
+      }
+    />
+
+    <select
+      className="w-full p-3 rounded-xl bg-[#151B2E] text-white"
+      value={missionForm.difficulty}
+      onChange={(e) =>
+        setMissionForm({ ...missionForm, difficulty: e.target.value })
+      }
+    >
+      <option value="Новичок">Новичок</option>
+      <option value="Промежуточный уровень">Промежуточный уровень</option>
+      <option value="Продвинутый">Продвинутый</option>
+    </select>
+
+    <input
+      type="number"
+      className="w-full p-3 rounded-xl bg-[#151B2E] text-white"
+      placeholder="XP"
+      value={missionForm.xp}
+      onChange={(e) =>
+        setMissionForm({ ...missionForm, xp: Number(e.target.value) })
+      }
+    />
+
+    <input
+      type="number"
+      className="w-full p-3 rounded-xl bg-[#151B2E] text-white"
+      placeholder="Время в минутах"
+      value={missionForm.duration}
+      onChange={(e) =>
+        setMissionForm({ ...missionForm, duration: Number(e.target.value) })
+      }
+    />
+
+    <button
+      onClick={createMission}
+      className="w-full py-3 rounded-xl bg-gradient-to-r from-[#00FF9D] to-[#7B61FF] text-white font-medium"
+    >
+      Сохранить миссию
+    </button>
+  </div>
+)}
                 </div>
               </CardContent>
             </Card>

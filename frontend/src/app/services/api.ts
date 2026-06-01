@@ -21,12 +21,93 @@ async function request(path: string, options: RequestInit = {}) {
 
 export const api = {
   register: (username: string, email: string, password: string) =>
-    request("/auth/register", { method: "POST", body: JSON.stringify({ username, email, password }) }),
+    request("/auth/register", {
+      method: "POST",
+      body: JSON.stringify({ username, email, password }),
+    }),
+
   login: (email: string, password: string) =>
-    request("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
-  leaderboard: () => request("/leaderboard"),
-  saveScore: (userId: number, username: string, gameName: string, points: number) =>
-    request("/scores", { method: "POST", body: JSON.stringify({ userId, username, gameName, points }) }),
+    request("/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    }),
+
+  getUserById: (id: number) =>
+    request(`/users/${id}`),
+
+  leaderboard: () =>
+    request("/leaderboard"),
+
+  saveScore: (
+    userId: number,
+    username: string,
+    gameName: string,
+    points: number
+  ) =>
+    request("/scores", {
+      method: "POST",
+      body: JSON.stringify({
+        userId,
+        username,
+        gameName,
+        points,
+      }),
+    }),
+
+    getMissions: () => request("/missions"),
+
+createMission: (mission: any) =>
+  request("/missions", {
+    method: "POST",
+    body: JSON.stringify(mission),
+  }),
+
+deleteMission: (id: number) =>
+  request(`/missions/${id}`, {
+    method: "DELETE",
+  }),
+
+  // ===== QUESTIONS =====
+
+  getQuestions: () =>
+    request("/questions"),
+
+  createQuestion: (question: any) =>
+    request("/questions", {
+      method: "POST",
+      body: JSON.stringify(question),
+    }),
+
+  updateQuestion: (id: number, question: any) =>
+    request(`/questions/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(question),
+    }),
+
+  deleteQuestion: (id: number) =>
+    request(`/questions/${id}`, {
+      method: "DELETE",
+    }),
+
+  // ===== USERS =====
+
+  getAllUsers: () =>
+    request("/users/all"),
+
+  makeAdmin: (id: number) =>
+    request(`/users/${id}/role?role=ADMIN`, {
+      method: "PUT",
+    }),
+
+  makePlayer: (id: number) =>
+    request(`/users/${id}/role?role=PLAYER`, {
+      method: "PUT",
+    }),
+
+  deleteUser: (id: number) =>
+    request(`/users/${id}`, {
+      method: "DELETE",
+    }),
 };
 
 export function saveUser(user: User) { localStorage.setItem("hq_user", JSON.stringify(user)); }
@@ -35,3 +116,4 @@ export function getUser(): User | null {
   return raw ? JSON.parse(raw) : null;
 }
 export function logout() { localStorage.removeItem("hq_user"); }
+

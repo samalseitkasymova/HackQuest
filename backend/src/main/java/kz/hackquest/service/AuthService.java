@@ -23,16 +23,18 @@ public class AuthService {
         if (userRepository.existsByUsername(request.username())) throw new RuntimeException("Такой username уже есть");
         if (userRepository.existsByEmail(request.email())) throw new RuntimeException("Такой email уже есть");
 
-        User user = User.builder()
-                .username(request.username().trim())
-                .email(request.email().trim().toLowerCase())
-                .password(passwordEncoder.encode(request.password()))
-                .role("PLAYER")
-                .points(0)
-                .level(1)
-                .build();
-        return toResponse(userRepository.save(user));
-    }
+        import kz.hackquest.model.UserRole;
+
+User user = User.builder()
+        .username(request.username().trim())
+        .email(request.email().trim().toLowerCase())
+        .password(passwordEncoder.encode(request.password()))
+        .role(UserRole.PLAYER)
+        .points(0)
+        .level(1)
+        .build();
+
+return toResponse(userRepository.save(user));
 
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.email().trim().toLowerCase())
@@ -44,6 +46,6 @@ public class AuthService {
     }
 
     public AuthResponse toResponse(User user) {
-        return new AuthResponse(user.getId(), user.getUsername(), user.getEmail(), user.getRole(), user.getPoints(), user.getLevel());
+        return new AuthResponse(user.getId(), user.getUsername(), user.getEmail(), user.getRole().name(), user.getPoints(), user.getLevel());
     }
 }
