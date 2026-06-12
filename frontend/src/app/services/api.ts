@@ -32,6 +32,12 @@ export const api = {
       body: JSON.stringify({ email, password }),
     }),
 
+    submitLab: (id: number, payload: string) =>
+  request(`/labs/${id}/submit`, {
+    method: "POST",
+    body: JSON.stringify({ payload }),
+  }),
+
   getUserById: (id: number) =>
     request(`/users/${id}`),
 
@@ -108,6 +114,39 @@ deleteMission: (id: number) =>
     request(`/users/${id}`, {
       method: "DELETE",
     }),
+
+    getLeaderboard: () =>
+  request("/users/leaderboard"),
+
+    getUserAchievements: (userId: number) =>
+  request(`/achievements/user/${userId}`),
+
+    // Labs
+getLabs: () =>
+  request("/labs"),
+
+getLabById: (id: number) =>
+  request(`/labs/${id}`),
+
+createLab: (lab: any) =>
+  request("/labs/admin", {
+    method: "POST",
+    body: JSON.stringify(lab),
+  }),
+
+updateLab: (id: number, lab: any) =>
+  request(`/labs/admin/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(lab),
+  }),
+
+  getUserLabAttempts: (userId: number) =>
+  request(`/lab-attempts/user/${userId}`),
+
+deleteLab: (id: number) =>
+  request(`/labs/admin/${id}`, {
+    method: "DELETE",
+  }),
 };
 
 export function saveUser(user: User) { localStorage.setItem("hq_user", JSON.stringify(user)); }

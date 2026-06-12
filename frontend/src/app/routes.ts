@@ -10,11 +10,16 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import DashboardLayout from "./components/DashboardLayout";
+import AdminLabsPage from "./pages/AdminLabsPage";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     Component: Landing,
+  },
+  {
+    path: "/admin/labs",
+    Component: AdminLabsPage,
   },
   { path: "/login", Component: Login },
   { path: "/register", Component: Register },

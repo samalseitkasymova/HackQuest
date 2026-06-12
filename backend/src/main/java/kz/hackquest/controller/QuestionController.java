@@ -2,18 +2,20 @@ package kz.hackquest.controller;
 
 import kz.hackquest.model.Question;
 import kz.hackquest.repository.QuestionRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/questions")
-@RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:5173")
 public class QuestionController {
 
     private final QuestionRepository questionRepository;
+
+    public QuestionController(QuestionRepository questionRepository) {
+        this.questionRepository = questionRepository;
+    }
 
     @GetMapping
     public List<Question> getAllQuestions() {
@@ -23,22 +25,6 @@ public class QuestionController {
     @PostMapping
     public Question createQuestion(@RequestBody Question question) {
         return questionRepository.save(question);
-    }
-
-    @PutMapping("/{id}")
-    public Question updateQuestion(@PathVariable Long id, @RequestBody Question question) {
-        Question existing = questionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Question not found"));
-
-        existing.setQuestionText(question.getQuestionText());
-        existing.setOptionA(question.getOptionA());
-        existing.setOptionB(question.getOptionB());
-        existing.setOptionC(question.getOptionC());
-        existing.setOptionD(question.getOptionD());
-        existing.setCorrectAnswer(question.getCorrectAnswer());
-        existing.setDifficulty(question.getDifficulty());
-
-        return questionRepository.save(existing);
     }
 
     @DeleteMapping("/{id}")

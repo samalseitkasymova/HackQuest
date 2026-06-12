@@ -1,10 +1,12 @@
 import { motion } from "motion/react";
-import { Users, BookOpen, Target, TrendingUp, Activity, Clock } from "lucide-react";
+import { Users, BookOpen, Target, TrendingUp, Activity, Clock, Terminal } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { useEffect, useState } from "react";
 import { api } from "../services/api";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
+import { Button } from "../components/ui/button";
+
 
 const userActivityData = [
   { day: "Mon", users: 320 },
@@ -46,7 +48,6 @@ const [questionForm, setQuestionForm] = useState({
   correctAnswer: "A",
   difficulty: "Easy",
 });
-
 const [showMissionForm, setShowMissionForm] = useState(false);
 const [missions, setMissions] = useState<any[]>([]);
 
@@ -116,6 +117,47 @@ const deleteQuestion = async (id: number) => {
   await api.deleteQuestion(id);
   loadQuestions();
 };
+  
+  const [showLabModal, setShowLabModal] = useState(false);
+  const [newLab, setNewLab] = useState({
+  title: "",
+  category: "SQL Injection",
+  difficulty: "Easy",
+  description: "",
+  briefing: "",
+  vulnerableCode: "",
+  hint: "",
+  correctAnswer: "",
+  points: 100,
+  timeLimit: 30,
+});
+const saveLab = async () => {
+  try {
+    await api.createLab(newLab);
+
+    alert("Лабораторная работа создана!");
+
+    setShowLabModal(false);
+
+    setNewLab({
+      title: "",
+      category: "SQL Injection",
+      difficulty: "Easy",
+      description: "",
+      briefing: "",
+      vulnerableCode: "",
+      hint: "",
+      correctAnswer: "",
+      points: 100,
+      timeLimit: 30,
+    });
+
+  } catch (error) {
+    console.error(error);
+    alert("Ошибка создания лабораторной работы");
+  }
+};
+
   return (
     <div className="p-8">
       {/* Header */}
@@ -484,6 +526,101 @@ const deleteQuestion = async (id: number) => {
                 </div>
               </CardContent>
             </Card>
+            <Card className="bg-[#1A2234] border-[#7B61FF]/20">
+  <CardHeader>
+    <CardTitle className="text-white flex items-center gap-2">
+      <Terminal className="w-5 h-5 text-[#00F5FF]" />
+      Управление лабораториями
+    </CardTitle>
+  </CardHeader>
+
+  <CardContent>
+    <Button
+      className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:opacity-90"
+      onClick={() => setShowLabModal(true)}
+    >
+      + Создать лабораторную работу
+    </Button>
+
+    <div className="mt-8 text-center text-gray-400">
+      Библиотека лабораторных работ и редактор будут отображаться здесь
+    </div>
+  </CardContent>
+</Card>{showLabModal && (
+<div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+
+<div className="bg-[#1A2234] p-6 rounded-2xl w-[700px] border border-cyan-500">
+
+<h2 className="text-2xl text-white font-bold mb-6">
+🧪 Создание лабораторной работы
+</h2>
+
+<input
+className="w-full p-3 rounded bg-[#0B1120] text-white mb-3"
+placeholder="Название"
+value={newLab.title}
+onChange={(e)=>
+setNewLab({...newLab,title:e.target.value})
+}
+/>
+
+<textarea
+className="w-full p-3 rounded bg-[#0B1120] text-white mb-3"
+placeholder="Брифинг"
+value={newLab.briefing}
+onChange={(e)=>
+setNewLab({...newLab,briefing:e.target.value})
+}
+/>
+
+<textarea
+className="w-full p-3 rounded bg-[#0B1120] text-white mb-3"
+placeholder="Уязвимый код"
+value={newLab.vulnerableCode}
+onChange={(e)=>
+setNewLab({...newLab,vulnerableCode:e.target.value})
+}
+/>
+
+<input
+className="w-full p-3 rounded bg-[#0B1120] text-white mb-3"
+placeholder="Подсказка"
+value={newLab.hint}
+onChange={(e)=>
+setNewLab({...newLab,hint:e.target.value})
+}
+/>
+
+<input
+className="w-full p-3 rounded bg-[#0B1120] text-white mb-6"
+placeholder="Правильный payload"
+value={newLab.correctAnswer}
+onChange={(e)=>
+setNewLab({...newLab,correctAnswer:e.target.value})
+}
+/>
+
+<div className="flex gap-4">
+
+<Button
+className="flex-1"
+onClick={() => setShowLabModal(false)}
+>
+Отмена
+</Button>
+
+<Button
+className="flex-1 bg-cyan-500"
+onClick={saveLab}
+>
+Сохранить
+</Button>
+
+</div>
+
+</div>
+</div>
+)}
           </div>
         </TabsContent>
 

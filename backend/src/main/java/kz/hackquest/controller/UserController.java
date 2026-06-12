@@ -51,4 +51,11 @@ public class UserController {
     public void deleteUser(@PathVariable Long id) {
         userRepository.deleteById(id);
     }
+
+    @GetMapping("/leaderboard")
+public List<User> getLeaderboard() {
+
+    return userRepository.findAllByOrderByPointsDesc();
+
+}
 }

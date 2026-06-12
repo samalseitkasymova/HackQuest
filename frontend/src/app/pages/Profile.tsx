@@ -8,6 +8,20 @@ import { getLang, setLang, t, Lang } from "../services/i18n";
 export default function Profile() {
   const [user, setUser] = useState(getUser());
   const [lang, setCurrentLang] = useState<Lang>(getLang());
+  const [attempts, setAttempts] = useState([]);
+  const [achievements, setAchievements] = useState<any[]>([]);
+  useEffect(() => {
+
+  api.getUserAchievements(1)
+     .then(setAchievements);
+
+}, []);
+  useEffect(() => {
+
+  api.getUserLabAttempts(1)
+     .then(setAttempts);
+
+}, []);
 
   useEffect(() => {
     async function loadProfile() {
@@ -121,41 +135,119 @@ export default function Profile() {
               </CardContent>
             </Card>
           </div>
+          
 
           <Card className="bg-[#1A2234] border-[#7B61FF]/20">
-            <CardContent className="p-6">
-              <h3 className="text-xl font-bold text-white mb-4">
-                {t("progress")}
-              </h3>
+  <CardContent className="p-6">
+    <h3 className="text-xl font-bold text-white mb-4">
+      {t("progress")}
+    </h3>
 
-              <div className="space-y-4">
-                <div className="p-4 bg-[#151B2E] rounded-xl">
-                  <div className="flex justify-between text-sm text-gray-300 mb-2">
-                    <span>{t("level")}</span>
-                    <span>
-                      {user.points} / {user.level * 100}
-                    </span>
-                  </div>
+    <div className="space-y-4">
+      <div className="p-4 bg-[#151B2E] rounded-xl">
+        <div className="flex justify-between text-sm text-gray-300 mb-2">
+          <span>{t("level")}</span>
+          <span>
+            {user.points} / {user.level * 100}
+          </span>
+        </div>
 
-                  <div className="w-full h-3 bg-[#0B0F1A] rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-[#00F5FF] to-[#7B61FF]"
-                      style={{
-                        width: `${Math.min(
-                          (user.points / (user.level * 100)) * 100,
-                          100
-                        )}%`,
-                      }}
-                    />
-                  </div>
-                </div>
+        <div className="w-full h-3 bg-[#0B0F1A] rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-[#00F5FF] to-[#7B61FF]"
+            style={{
+              width: `${Math.min(
+                (user.points / (user.level * 100)) * 100,
+                100
+              )}%`,
+            }}
+          />
+        </div>
+      </div>
 
-                <div className="p-4 bg-[#151B2E] rounded-xl text-gray-300">
-                  HackQuest progress will be shown here.
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      <div className="p-4 bg-[#151B2E] rounded-xl text-gray-300">
+        HackQuest progress will be shown here.
+      </div>
+    </div>
+  </CardContent>
+</Card>
+
+<Card className="bg-[#1A2234] border-[#7B61FF]/20">
+  <CardContent className="p-6">
+    <h2 className="text-xl font-bold text-white mb-4">
+      Recent Lab Attempts
+    </h2>
+
+    {attempts.length === 0 ? (
+      <div className="text-gray-400">
+        No lab attempts yet
+      </div>
+    ) : (
+      attempts.map((attempt: any) => (
+        <div
+          key={attempt.id}
+          className="bg-[#151B2E] rounded-xl p-4 mb-3"
+        >
+          <div className="text-sm text-gray-300">
+            Payload:
+          </div>
+
+          <div className="font-mono text-[#00F5FF] mb-2">
+            {attempt.payload}
+          </div>
+
+          <div
+            className={
+              attempt.success
+                ? "text-[#00FF9D]"
+                : "text-[#FF3366]"
+            }
+          >
+            {attempt.success ? "Success" : "Failed"}
+          </div>
+        </div>
+      ))
+    )}
+  </CardContent>
+</Card> 
+<Card className="bg-[#1A2234] border-[#7B61FF]/20">
+  <CardContent className="p-6">
+
+    <h2 className="text-xl font-bold text-white mb-4">
+      Achievements
+    </h2>
+
+    {achievements.length === 0 ? (
+
+      <div className="text-gray-400">
+        No achievements yet
+      </div>
+
+    ) : (
+
+      achievements.map((achievement: any) => (
+
+        <div
+          key={achievement.id}
+          className="bg-[#151B2E] rounded-xl p-4 mb-3"
+        >
+
+          <div className="text-[#00FF9D] font-bold">
+            {achievement.name}
+          </div>
+
+          <div className="text-sm text-gray-400">
+            {achievement.description}
+          </div>
+
+        </div>
+
+      ))
+
+    )}
+
+  </CardContent>
+</Card>
         </div>
       </div>
     </div>

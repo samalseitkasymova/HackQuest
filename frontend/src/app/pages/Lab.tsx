@@ -1,41 +1,88 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Clock, Lightbulb, AlertCircle, Terminal, Play } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Textarea } from "../components/ui/textarea";
+import { api } from "../services/api";
 
 export default function Lab() {
   const [code, setCode] = useState("");
   const [attempts, setAttempts] = useState(3);
   const [showHint, setShowHint] = useState(false);
   const [output, setOutput] = useState<string[]>([]);
-  const [timeLeft, setTimeLeft] = useState(1800); // 30 minutes
+  const [timeLeft, setTimeLeft] = useState(0);// 30 minutes
+  const [lab, setLab] = useState<any>(null);
+
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
+  useEffect(() => {
 
-  const handleRunCode = () => {
-    setOutput([
-      ...output,
-      `> Executing code...`,
-      `> Connecting to target server...`,
-      `> Testing payload...`,
-      `> Result: Access Denied - Try again!`,
-    ]);
-    setAttempts(attempts - 1);
-  };
+  if (lab?.timeLimit) {
 
+    setTimeLeft(lab.timeLimit * 60);
+
+  }
+
+}, [lab]);
+
+const handleRunCode = async () => {
+  try {
+
+    const result = await api.submitLab(1, code);
+
+    setOutput(prev => [
+  ...prev,
+  ...result.terminal.split("\n")
+]);
+
+if (result.success) {
+
+  setOutput(prev => [
+    ...prev,
+    "",
+    `🏆 Achievement unlocked`,
+    `SQL Injection Master`,
+    `+${result.points} XP`
+  ]);
+
+}
+
+    if (!result.success) {
+      setAttempts(prev => Math.max(prev - 1, 0));
+    }
+
+  } catch (error) {
+
+    setOutput(prev => [
+  ...prev,
+  "> Connection error"
+]);
+
+    console.error(error);
+
+  }
+};
+useEffect(() => {
+  api.getLabById(1)
+    .then(setLab)
+    .catch(console.error);
+}, []);
   return (
     <div className="p-8 h-screen flex flex-col">
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">SQL Injection Lab</h1>
-            <p className="text-gray-400">Exploit the vulnerable login form</p>
+            <h1 className="text-3xl font-bold text-white mb-2">
+  {lab?.title || "SQL Injection Lab"}
+</h1>
+            <p className="text-gray-400">
+  {lab?.description}
+</p>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 px-4 py-2 bg-[#1A2234] border border-[#FF3366]/30 rounded-xl">
@@ -64,8 +111,7 @@ export default function Lab() {
               <div>
                 <h3 className="text-[#00F5FF] font-semibold mb-2">Objective:</h3>
                 <p>
-                  You've discovered a vulnerable login form that doesn't properly sanitize user input. 
-                  Your goal is to bypass the authentication using SQL injection.
+                  {lab?.briefing}
                 </p>
               </div>
 
@@ -82,12 +128,8 @@ export default function Lab() {
                 <h3 className="text-[#7B61FF] font-semibold mb-2">Vulnerable Code:</h3>
                 <div className="bg-[#0B0F1A] rounded-lg p-4 font-mono text-sm">
                   <pre className="text-gray-300">
-{`$username = $_POST['username'];
-$password = $_POST['password'];
+{lab?.vulnerableCode}
 
-$query = "SELECT * FROM users 
-  WHERE username='$username' 
-  AND password='$password'";`}
                   </pre>
                 </div>
               </div>
@@ -122,7 +164,8 @@ $query = "SELECT * FROM users
                   <div className="flex items-start gap-2">
                     <Lightbulb className="w-5 h-5 text-[#FFA500] flex-shrink-0 mt-0.5" />
                     <div className="text-sm text-gray-300">
-                      <strong className="text-[#FFA500]">Hint:</strong> Try using SQL comments (--) 
+                      <strong className="text-[#FFA500]">Hint:</strong>
+{lab?.hint} Try using SQL comments (--) 
                       to ignore the rest of the query. Think about how you can make the WHERE condition 
                       always return true.
                     </div>

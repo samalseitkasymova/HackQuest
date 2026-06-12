@@ -1,12 +1,15 @@
 import { motion } from "motion/react";
 import { Trophy, Medal, Award, TrendingUp, Zap } from "lucide-react";
 import { Avatar, AvatarFallback } from "../components/ui/avatar";
+import { useEffect, useState } from "react";
+import { api } from "../services/api";
 
 const topUsers = [
   { rank: 1, name: "Sarah Chen", level: "Expert", points: 45800, missions: 156, avatar: "SC", color: "#FFD700" },
   { rank: 2, name: "Alex Rodriguez", level: "Senior", points: 43200, missions: 142, avatar: "AR", color: "#C0C0C0" },
   { rank: 3, name: "Emma Wilson", level: "Senior", points: 41500, missions: 138, avatar: "EW", color: "#CD7F32" },
 ];
+
 
 const otherUsers = [
   { rank: 4, name: "Michael Brown", level: "Senior", points: 38900, missions: 128, avatar: "MB" },
@@ -17,6 +20,15 @@ const otherUsers = [
 ];
 
 export default function Leaderboard() {
+  const [players, setPlayers] = useState<any[]>([]);
+
+  useEffect(() => {
+
+    api.getLeaderboard()
+       .then(setPlayers)
+       .catch(console.error);
+
+  }, []);
   return (
     <div className="p-8">
       {/* Header */}
@@ -147,7 +159,7 @@ export default function Leaderboard() {
               </tr>
             </thead>
             <tbody>
-              {otherUsers.map((user, index) => (
+              {players.map((user, index) => (
                 <motion.tr
                   key={user.rank}
                   initial={{ opacity: 0, x: -20 }}
@@ -166,7 +178,7 @@ export default function Leaderboard() {
                           user.isCurrentUser ? "text-[#00F5FF]" : "text-gray-400"
                         }`}
                       >
-                        #{user.rank}
+                        #{index + 1}
                       </span>
                     </div>
                   </td>
@@ -187,10 +199,10 @@ export default function Leaderboard() {
                       </Avatar>
                       <span
                         className={`font-medium ${
-                          user.isCurrentUser ? "text-[#00F5FF]" : "text-white"
+                          false ? "text-[#00F5FF]" : "text-white"
                         }`}
                       >
-                        {user.name}
+                        {user.username}
                       </span>
                     </div>
                   </td>
@@ -213,7 +225,7 @@ export default function Leaderboard() {
                     <span className="font-bold text-[#00F5FF]">{user.points.toLocaleString()}</span>
                   </td>
                   <td className="p-4 text-right">
-                    <span className="text-gray-400">{user.missions}</span>
+                    <span className="text-gray-400">0</span>
                   </td>
                 </motion.tr>
               ))}
