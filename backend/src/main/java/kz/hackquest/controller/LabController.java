@@ -65,9 +65,10 @@ public class LabController {
         lab.setBriefing(newLab.getBriefing());
         lab.setVulnerableCode(newLab.getVulnerableCode());
         lab.setHint(newLab.getHint());
-        lab.setCorrectAnswer(newLab.getCorrectAnswer());
-        lab.setPoints(newLab.getPoints());
-        lab.setTimeLimit(newLab.getTimeLimit());
+        lab.setCorrectPayload(newLab.getCorrectPayload());
+        lab.setXpReward(newLab.getXpReward());
+        lab.setDuration(newLab.getDuration());
+        lab.setEnabled(newLab.getEnabled());
 
         return labRepository.save(lab);
     }
@@ -102,7 +103,6 @@ boolean success =
     attempt.setUserId(1L); // пока временно
     attempt.setPayload(payload);
     attempt.setSuccess(success);
-    attempt.setEarnedPoints(success ? lab.getPoints() : 0);
 
     labAttemptRepository.save(attempt);
 
@@ -126,7 +126,7 @@ boolean success =
             > +200 XP
             """);
 
-    response.put("points", lab.getPoints());
+    response.put("points", lab.getXpReward());
 
     achievementService.unlockAchievement(
         userId,

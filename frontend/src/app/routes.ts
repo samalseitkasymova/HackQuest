@@ -2,7 +2,8 @@ import { createBrowserRouter } from "react-router";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import Testing from "./pages/Testing";
-import Lab from "./pages/Lab";
+import LabListPage from "./lab/LabListPage";
+import LabDetailPage from "./lab/LabDetailPage";
 import Leaderboard from "./pages/Leaderboard";
 import Missions from "./pages/Missions";
 import Admin from "./pages/Admin";
@@ -10,16 +11,11 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import DashboardLayout from "./components/DashboardLayout";
-import AdminLabsPage from "./pages/AdminLabsPage";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     Component: Landing,
-  },
-  {
-    path: "/admin/labs",
-    Component: AdminLabsPage,
   },
   { path: "/login", Component: Login },
   { path: "/register", Component: Register },
@@ -29,7 +25,13 @@ export const router = createBrowserRouter([
     children: [
       { index: true, Component: Dashboard },
       { path: "testing", Component: Testing },
-      { path: "lab", Component: Lab },
+      { 
+        path: "lab", 
+        children: [
+          { index: true, Component: LabListPage },
+          { path: ":id", Component: LabDetailPage },
+        ]
+      },
       { path: "leaderboard", Component: Leaderboard },
       { path: "missions", Component: Missions },
       { path: "profile", Component: Profile },

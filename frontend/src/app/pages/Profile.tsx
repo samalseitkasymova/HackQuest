@@ -3,13 +3,26 @@ import { User, Mail, Award, Trophy, Target, Shield } from "lucide-react";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { api, getUser, saveUser } from "../services/api";
+import { useLabContext } from "../context/LabContext";
+import { useAchievementContext } from "../context/AchievementContext";
+import AchievementsSection from "../components/profile/AchievementsSection";
 import { getLang, setLang, t, Lang } from "../services/i18n";
+import { labs } from "../services/labService";
 
 export default function Profile() {
   const [user, setUser] = useState(getUser());
   const [lang, setCurrentLang] = useState<Lang>(getLang());
   const [attempts, setAttempts] = useState([]);
   const [achievements, setAchievements] = useState<any[]>([]);
+  const { resetProgress, completedLabs, unlockedLabs, xp } = useLabContext();
+  const { resetAchievements, achievements: contextAchievements } = useAchievementContext();
+
+  // Calculate stats
+  const completedCount = completedLabs.length;
+  const unlockedCount = unlockedLabs.length;
+  const totalLabs = labs.length;
+  const unlockedAchievementsCount = contextAchievements.filter(a => a.unlocked).length;
+  const totalAchievements = contextAchievements.length;
   useEffect(() => {
 
   api.getUserAchievements(1)
@@ -102,18 +115,30 @@ export default function Profile() {
             <Button className="w-full mt-6 bg-gradient-to-r from-[#00F5FF] to-[#7B61FF] text-white">
               {t("editProfile")}
             </Button>
+            <Button
+              variant="outline"
+              className="w-full mt-3 text-white"
+              onClick={() => {
+                if (window.confirm("Сбросить весь прогресс?")) {
+                  resetProgress();
+                  resetAchievements();
+                }
+              }}
+            >
+              Reset Progress
+            </Button>
           </CardContent>
         </Card>
 
         <div className="lg:col-span-2 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card className="bg-[#1A2234] border-[#7B61FF]/20">
               <CardContent className="p-4 text-center">
                 <Trophy className="w-8 h-8 text-[#00F5FF] mx-auto mb-3" />
                 <div className="text-2xl font-bold text-white">
-                  {user.points}
+                  {xp}
                 </div>
-                <div className="text-xs text-gray-400">{t("points")}</div>
+                <div className="text-xs text-gray-400">Total XP</div>
               </CardContent>
             </Card>
 
@@ -121,17 +146,25 @@ export default function Profile() {
               <CardContent className="p-4 text-center">
                 <Target className="w-8 h-8 text-[#7B61FF] mx-auto mb-3" />
                 <div className="text-2xl font-bold text-white">
-                  {user.level}
+                  {completedCount} / {totalLabs}
                 </div>
-                <div className="text-xs text-gray-400">{t("level")}</div>
+                <div className="text-xs text-gray-400">Completed Labs</div>
               </CardContent>
             </Card>
 
             <Card className="bg-[#1A2234] border-[#7B61FF]/20">
               <CardContent className="p-4 text-center">
                 <Award className="w-8 h-8 text-[#00FF9D] mx-auto mb-3" />
-                <div className="text-2xl font-bold text-white">Beginner</div>
-                <div className="text-xs text-gray-400">{t("rank")}</div>
+                <div className="text-2xl font-bold text-white">{unlockedCount} / {totalLabs}</div>
+                <div className="text-xs text-gray-400">Unlocked Labs</div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-[#1A2234] border-[#7B61FF]/20">
+              <CardContent className="p-4 text-center">
+                <Trophy className="w-8 h-8 text-[#FFA500] mx-auto mb-3" />
+                <div className="text-2xl font-bold text-white">{unlockedAchievementsCount} / {totalAchievements}</div>
+                <div className="text-xs text-gray-400">Achievements</div>
               </CardContent>
             </Card>
           </div>
@@ -175,77 +208,44 @@ export default function Profile() {
 <Card className="bg-[#1A2234] border-[#7B61FF]/20">
   <CardContent className="p-6">
     <h2 className="text-xl font-bold text-white mb-4">
-      Recent Lab Attempts
+      Recent Lab Progress
     </h2>
 
-    {attempts.length === 0 ? (
+    {completedLabs.length === 0 ? (
       <div className="text-gray-400">
-        No lab attempts yet
+        Пока нет завершённых лабораторий
       </div>
     ) : (
-      attempts.map((attempt: any) => (
-        <div
-          key={attempt.id}
-          className="bg-[#151B2E] rounded-xl p-4 mb-3"
-        >
-          <div className="text-sm text-gray-300">
-            Payload:
-          </div>
-
-          <div className="font-mono text-[#00F5FF] mb-2">
-            {attempt.payload}
-          </div>
-
+      completedLabs
+        .map(id => labs.find(lab => lab.id === id))
+        .filter(Boolean)
+        .map((lab: any) => (
           <div
-            className={
-              attempt.success
-                ? "text-[#00FF9D]"
-                : "text-[#FF3366]"
-            }
+            key={lab.id}
+            className="bg-[#151B2E] rounded-xl p-4 mb-3"
           >
-            {attempt.success ? "Success" : "Failed"}
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-white font-bold">{lab.title}</div>
+              <div className="text-[#00FF9D] text-xs font-medium">Completed</div>
+            </div>
+
+            <div className="flex items-center justify-between text-sm text-gray-400 mb-2">
+              <span>{lab.difficulty}</span>
+              <span className="text-[#00F5FF] font-bold">+{lab.xpReward} XP</span>
+            </div>
+
+            <div className="text-xs text-gray-500">
+              {lab.category}
+            </div>
           </div>
-        </div>
-      ))
+        ))
     )}
   </CardContent>
 </Card> 
-<Card className="bg-[#1A2234] border-[#7B61FF]/20">
+  <Card className="bg-[#1A2234] border-[#7B61FF]/20">
   <CardContent className="p-6">
-
-    <h2 className="text-xl font-bold text-white mb-4">
-      Achievements
-    </h2>
-
-    {achievements.length === 0 ? (
-
-      <div className="text-gray-400">
-        No achievements yet
-      </div>
-
-    ) : (
-
-      achievements.map((achievement: any) => (
-
-        <div
-          key={achievement.id}
-          className="bg-[#151B2E] rounded-xl p-4 mb-3"
-        >
-
-          <div className="text-[#00FF9D] font-bold">
-            {achievement.name}
-          </div>
-
-          <div className="text-sm text-gray-400">
-            {achievement.description}
-          </div>
-
-        </div>
-
-      ))
-
-    )}
-
+    <h2 className="text-xl font-bold text-white mb-4">Achievements</h2>
+    <AchievementsSection />
   </CardContent>
 </Card>
         </div>

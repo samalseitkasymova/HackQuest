@@ -1,238 +1,331 @@
 import { motion } from "motion/react";
-import { Trophy, Medal, Award, TrendingUp, Zap } from "lucide-react";
-import { Avatar, AvatarFallback } from "../components/ui/avatar";
-import { useEffect, useState } from "react";
-import { api } from "../services/api";
+import { Trophy, Medal, Award, TrendingUp, Zap, Target } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { useLabContext } from "../context/LabContext";
+import { useAchievementContext } from "../context/AchievementContext";
 
-const topUsers = [
-  { rank: 1, name: "Sarah Chen", level: "Expert", points: 45800, missions: 156, avatar: "SC", color: "#FFD700" },
-  { rank: 2, name: "Alex Rodriguez", level: "Senior", points: 43200, missions: 142, avatar: "AR", color: "#C0C0C0" },
-  { rank: 3, name: "Emma Wilson", level: "Senior", points: 41500, missions: 138, avatar: "EW", color: "#CD7F32" },
-];
-
-
-const otherUsers = [
-  { rank: 4, name: "Michael Brown", level: "Senior", points: 38900, missions: 128, avatar: "MB" },
-  { rank: 5, name: "Lisa Anderson", level: "Middle", points: 36700, missions: 119, avatar: "LA" },
-  { rank: 6, name: "David Kim", level: "Middle", points: 34200, missions: 112, avatar: "DK" },
-  { rank: 7, name: "Sophie Martin", level: "Middle", points: 32800, missions: 108, avatar: "SM" },
-  { rank: 142, name: "John Doe (You)", level: "Junior", points: 12450, missions: 38, avatar: "JD", isCurrentUser: true },
-];
+interface Player {
+  id: number;
+  username: string;
+  xp: number;
+  completedLabs: number;
+  achievements: number;
+}
 
 export default function Leaderboard() {
-  const [players, setPlayers] = useState<any[]>([]);
+  const { xp, completedLabs } = useLabContext();
+  const { achievements } = useAchievementContext();
 
-  useEffect(() => {
+  const completedCount = completedLabs.length;
+  const unlockedAchievements = achievements.filter((a) => a.unlocked).length;
 
-    api.getLeaderboard()
-       .then(setPlayers)
-       .catch(console.error);
+  // Create players array with current player data
+  let players: Player[] = [
+    {
+      id: 1,
+      username: "You",
+      xp: xp,
+      completedLabs: completedCount,
+      achievements: unlockedAchievements,
+    },
+    {
+      id: 2,
+      username: "CyberHunter",
+      xp: 3200,
+      completedLabs: 4,
+      achievements: 5,
+    },
+    {
+      id: 3,
+      username: "ShadowRoot",
+      xp: 2500,
+      completedLabs: 3,
+      achievements: 4,
+    },
+    {
+      id: 4,
+      username: "PacketSniffer",
+      xp: 1800,
+      completedLabs: 2,
+      achievements: 3,
+    },
+    {
+      id: 5,
+      username: "ZeroDay",
+      xp: 900,
+      completedLabs: 1,
+      achievements: 1,
+    },
+  ];
 
-  }, []);
+  // Sort by XP descending
+  players = players.sort((a, b) => b.xp - a.xp);
+
+  // Get top 3
+  const topThree = players.slice(0, 3);
+
+  // Find current player rank
+  const yourRank = players.findIndex((p) => p.username === "You") + 1;
+
+  // Medal colors for top 3
+  const medalColors = {
+    1: "#FFD700", // Gold
+    2: "#C0C0C0", // Silver
+    3: "#CD7F32", // Bronze
+  };
+
+  const getMedalEmoji = (position: number) => {
+    const emojis = { 1: "🥇", 2: "🥈", 3: "🥉" };
+    return emojis[position as keyof typeof emojis] || "";
+  };
+
   return (
-    <div className="p-8">
+    <div className="p-8 space-y-8">
       {/* Header */}
-      <div className="mb-8">
+      <div>
         <h1 className="text-4xl font-bold text-white mb-2 flex items-center gap-3">
           <Trophy className="w-10 h-10 text-[#FFD700]" />
           Global Leaderboard
         </h1>
-        <p className="text-gray-400">Compete with hackers worldwide</p>
+        <p className="text-gray-400">Compete with cybersecurity experts worldwide</p>
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: "Your Rank", value: "#142", icon: TrendingUp, color: "#00F5FF", change: "↑ 12 this week" },
-          { label: "Total XP", value: "12,450", icon: Zap, color: "#7B61FF", change: "+250 today" },
-          { label: "Top 25%", value: "Yes", icon: Award, color: "#00FF9D", change: "Keep going!" },
+          {
+            label: "Total Players",
+            value: players.length.toString(),
+            icon: Trophy,
+            color: "#FFD700",
+          },
+          {
+            label: "Top Score",
+            value: `${players[0].xp.toLocaleString()} XP`,
+            icon: Zap,
+            color: "#00F5FF",
+          },
+          {
+            label: "Your Rank",
+            value: `#${yourRank}`,
+            icon: Award,
+            color: "#00FF9D",
+          },
         ].map((stat, index) => (
           <motion.div
             key={index}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-[#1A2234] border border-[#7B61FF]/20 rounded-xl p-6"
           >
-            <div className="flex items-center gap-3 mb-3">
-              <div
-                className="w-10 h-10 rounded-lg flex items-center justify-center"
-                style={{
-                  backgroundColor: `${stat.color}20`,
-                  boxShadow: `0 0 15px ${stat.color}30`,
-                }}
-              >
-                <stat.icon className="w-5 h-5" style={{ color: stat.color }} />
-              </div>
-              <div>
-                <div className="text-sm text-gray-400">{stat.label}</div>
-                <div className="text-2xl font-bold text-white">{stat.value}</div>
-              </div>
-            </div>
-            <div className="text-xs text-gray-500">{stat.change}</div>
+            <Card className="bg-[#1A2234] border-[#7B61FF]/20">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <div
+                    className="w-12 h-12 rounded-lg flex items-center justify-center"
+                    style={{
+                      backgroundColor: `${stat.color}20`,
+                      boxShadow: `0 0 15px ${stat.color}30`,
+                    }}
+                  >
+                    <stat.icon className="w-6 h-6" style={{ color: stat.color }} />
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-400">{stat.label}</div>
+                    <div className="text-2xl font-bold text-white">{stat.value}</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </motion.div>
         ))}
       </div>
 
-      {/* Top 3 Users - Podium Style */}
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-white mb-6">Top Hackers</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {topUsers.map((user, index) => (
-            <motion.div
-              key={user.rank}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.15 }}
-              className={`relative ${index === 0 ? "md:order-2" : index === 1 ? "md:order-1" : "md:order-3"}`}
-            >
-              <div
-                className="bg-gradient-to-br from-[#1A2234] to-[#151B2E] border-2 rounded-2xl p-6 text-center"
-                style={{
-                  borderColor: user.color,
-                  boxShadow: `0 0 30px ${user.color}40`,
-                }}
+      {/* Top 3 Podium */}
+      <div>
+        <h2 className="text-2xl font-bold text-white mb-6">🏆 Top 3 Hackers</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {topThree.map((player, index) => {
+            const position = index + 1;
+            const color =
+              medalColors[position as keyof typeof medalColors];
+            return (
+              <motion.div
+                key={player.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.15 }}
+                className={index === 0 ? "md:order-2" : index === 1 ? "md:order-1" : "md:order-3"}
               >
-                {/* Rank Badge */}
-                <div
-                  className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full flex items-center justify-center font-bold text-white shadow-lg"
-                  style={{ backgroundColor: user.color }}
-                >
-                  <Medal className="w-6 h-6" />
-                </div>
-
-                {/* Avatar */}
-                <div className="mt-4 mb-4">
-                  <div
-                    className="w-24 h-24 rounded-full mx-auto flex items-center justify-center text-2xl font-bold text-white shadow-lg"
-                    style={{
-                      background: `linear-gradient(135deg, ${user.color}, ${user.color}80)`,
-                    }}
-                  >
-                    {user.avatar}
-                  </div>
-                </div>
-
-                {/* User Info */}
-                <h3 className="text-xl font-bold text-white mb-2">{user.name}</h3>
-                <div
-                  className="inline-block px-3 py-1 rounded-full text-sm font-medium mb-4"
+                <Card
+                  className="bg-gradient-to-br from-[#1A2234] to-[#151B2E]"
                   style={{
-                    backgroundColor: `${user.color}20`,
-                    color: user.color,
+                    borderColor: `${color}40`,
+                    boxShadow: `0 0 30px ${color}30`,
                   }}
                 >
-                  {user.level}
-                </div>
+                  <CardContent className="p-6">
+                    <div className="text-center">
+                      {/* Medal */}
+                      <div className="text-5xl mb-4">
+                        {getMedalEmoji(position)}
+                      </div>
 
-                {/* Stats */}
-                <div className="space-y-2 pt-4 border-t border-[#7B61FF]/20">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Points</span>
-                    <span className="font-bold text-[#00F5FF]">{user.points.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Missions</span>
-                    <span className="font-bold text-[#00FF9D]">{user.missions}</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+                      {/* Username */}
+                      <h3 className="text-xl font-bold text-white mb-2">
+                        {player.username}
+                      </h3>
+
+                      {/* Rank Badge */}
+                      <div
+                        className="inline-block px-4 py-2 rounded-full font-bold text-white mb-4"
+                        style={{ backgroundColor: color }}
+                      >
+                        #{position}
+                      </div>
+
+                      {/* Stats */}
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-400">XP:</span>
+                          <span className="text-[#00F5FF] font-bold">
+                            {player.xp.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-400">Labs:</span>
+                          <span className="text-[#00FF9D] font-bold">
+                            {player.completedLabs}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-400">Achievements:</span>
+                          <span className="text-[#7B61FF] font-bold">
+                            {player.achievements}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
 
-      {/* Other Users - Table Style */}
-      <div className="bg-[#1A2234] border border-[#7B61FF]/20 rounded-2xl overflow-hidden">
-        <div className="p-6 border-b border-[#7B61FF]/20">
-          <h2 className="text-xl font-bold text-white">All Rankings</h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-[#7B61FF]/20 bg-[#151B2E]">
-                <th className="text-left p-4 text-sm font-medium text-gray-400">Rank</th>
-                <th className="text-left p-4 text-sm font-medium text-gray-400">User</th>
-                <th className="text-left p-4 text-sm font-medium text-gray-400">Level</th>
-                <th className="text-right p-4 text-sm font-medium text-gray-400">Points</th>
-                <th className="text-right p-4 text-sm font-medium text-gray-400">Missions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {players.map((user, index) => (
-                <motion.tr
-                  key={user.rank}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className={`border-b border-[#7B61FF]/10 transition-colors ${
-                    user.isCurrentUser
-                      ? "bg-[#00F5FF]/10 hover:bg-[#00F5FF]/15"
-                      : "hover:bg-[#151B2E]"
-                  }`}
-                >
-                  <td className="p-4">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`font-bold ${
-                          user.isCurrentUser ? "text-[#00F5FF]" : "text-gray-400"
+      {/* Full Leaderboard Table */}
+      <div>
+        <h2 className="text-2xl font-bold text-white mb-6">📊 Full Rankings</h2>
+        <Card className="bg-[#1A2234] border-[#7B61FF]/20 overflow-hidden">
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-[#7B61FF]/20 bg-[#151B2E]">
+                    <th className="px-6 py-4 text-sm font-semibold text-[#00F5FF]">
+                      Rank
+                    </th>
+                    <th className="px-6 py-4 text-sm font-semibold text-[#00F5FF]">
+                      Username
+                    </th>
+                    <th className="px-6 py-4 text-sm font-semibold text-[#00F5FF]">
+                      XP
+                    </th>
+                    <th className="px-6 py-4 text-sm font-semibold text-[#00F5FF]">
+                      Completed Labs
+                    </th>
+                    <th className="px-6 py-4 text-sm font-semibold text-[#00F5FF]">
+                      Achievements
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {players.map((player, index) => {
+                    const rank = index + 1;
+                    const isCurrentUser = player.username === "You";
+                    return (
+                      <motion.tr
+                        key={player.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className={`border-b border-[#7B61FF]/10 hover:bg-[#0B0F1A]/50 transition-colors ${
+                          isCurrentUser ? "bg-[#00F5FF]/5" : ""
                         }`}
                       >
-                        #{index + 1}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="w-10 h-10">
-                        <AvatarFallback
-                          className="font-bold"
+                        <td
+                          className={`px-6 py-4 font-bold ${
+                            rank <= 3
+                              ? "text-lg"
+                              : "text-gray-300"
+                          }`}
                           style={{
-                            background: user.isCurrentUser
-                              ? "linear-gradient(135deg, #00F5FF, #7B61FF)"
-                              : "#2A3347",
-                            color: "white",
+                            color:
+                              rank === 1
+                                ? "#FFD700"
+                                : rank === 2
+                                ? "#C0C0C0"
+                                : rank === 3
+                                ? "#CD7F32"
+                                : "inherit",
                           }}
                         >
-                          {user.avatar}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span
-                        className={`font-medium ${
-                          false ? "text-[#00F5FF]" : "text-white"
-                        }`}
-                      >
-                        {user.username}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        user.level === "Expert"
-                          ? "bg-[#FFD700]/20 text-[#FFD700]"
-                          : user.level === "Senior"
-                          ? "bg-[#7B61FF]/20 text-[#7B61FF]"
-                          : user.level === "Middle"
-                          ? "bg-[#00F5FF]/20 text-[#00F5FF]"
-                          : "bg-[#00FF9D]/20 text-[#00FF9D]"
-                      }`}
-                    >
-                      {user.level}
-                    </span>
-                  </td>
-                  <td className="p-4 text-right">
-                    <span className="font-bold text-[#00F5FF]">{user.points.toLocaleString()}</span>
-                  </td>
-                  <td className="p-4 text-right">
-                    <span className="text-gray-400">0</span>
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                          #{rank}
+                        </td>
+                        <td
+                          className={`px-6 py-4 font-medium ${
+                            isCurrentUser
+                              ? "text-[#00F5FF] font-bold"
+                              : "text-white"
+                          }`}
+                        >
+                          {player.username}
+                          {isCurrentUser && (
+                            <span className="ml-2 text-xs bg-[#00F5FF]/20 text-[#00F5FF] px-2 py-1 rounded">
+                              YOU
+                            </span>
+                          )}
+                        </td>
+                        <td
+                          className={`px-6 py-4 font-bold ${
+                            isCurrentUser ? "text-[#00F5FF]" : "text-[#7B61FF]"
+                          }`}
+                        >
+                          {player.xp.toLocaleString()}
+                        </td>
+                        <td
+                          className={`px-6 py-4 font-bold ${
+                            isCurrentUser ? "text-[#00F5FF]" : "text-[#00FF9D]"
+                          }`}
+                        >
+                          {player.completedLabs}
+                        </td>
+                        <td
+                          className={`px-6 py-4 font-bold ${
+                            isCurrentUser ? "text-[#00F5FF]" : "text-[#7B61FF]"
+                          }`}
+                        >
+                          {player.achievements}
+                        </td>
+                      </motion.tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* API Ready Notice */}
+      <div className="bg-[#1A2234] border border-[#7B61FF]/20 rounded-lg p-4 text-sm text-gray-400">
+        <code>
+          {/* TODO: GET /api/leaderboard */}
+          🔗 Ready for Backend Integration: GET /api/leaderboard
+        </code>
       </div>
     </div>
   );
 }
+

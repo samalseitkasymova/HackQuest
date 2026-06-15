@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { useEffect, useState } from "react";
 import { api } from "../services/api";
+import AdminLabsPage from "./AdminLabsPage";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 import { Button } from "../components/ui/button";
 
@@ -217,6 +218,7 @@ const saveLab = async () => {
     <TabsTrigger value="analytics">Analytics</TabsTrigger>
     <TabsTrigger value="users">Users</TabsTrigger>
     <TabsTrigger value="content">Content</TabsTrigger>
+    <TabsTrigger value="laboratories">Laboratories</TabsTrigger>
     <TabsTrigger value="activity">Activity Logs</TabsTrigger>
   </TabsList>
 
@@ -622,6 +624,11 @@ onClick={saveLab}
 </div>
 )}
           </div>
+        </TabsContent>
+
+        {/* Laboratories Tab */}
+        <TabsContent value="laboratories">
+          <AdminLabsPage />
         </TabsContent>
 
         {/* Activity Logs Tab */}

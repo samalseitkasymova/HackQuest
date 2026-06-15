@@ -1,61 +1,27 @@
 package kz.hackquest.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import lombok.*;
 
 @Entity
 @Table(name = "achievements")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Achievement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    private String title;
 
-    private String name;
-
+    @Column(length = 2000)
     private String description;
 
-    private LocalDateTime earnedAt;
+    private String icon;
 
-    public Achievement() {
-    }
-
-    @PrePersist
-    public void prePersist() {
-        earnedAt = LocalDateTime.now();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public LocalDateTime getEarnedAt() {
-        return earnedAt;
-    }
+    private Integer xpReward;
 }
