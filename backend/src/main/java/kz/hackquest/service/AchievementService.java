@@ -14,16 +14,16 @@ public class AchievementService {
     }
 
     public void unlockAchievement(Long userId,
-                                  String title,
+                                  String name,
                                   String description) {
 
-        if (!achievementRepository.existsByTitle(title)) {
+        if (!achievementRepository.existsByUserIdAndName(userId, name)) {
 
             Achievement achievement = new Achievement();
 
-            achievement.setTitle(title);
+            achievement.setUserId(userId);
+            achievement.setName(name);
             achievement.setDescription(description);
-            achievement.setXpReward(0);
 
             achievementRepository.save(achievement);
         }

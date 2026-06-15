@@ -21,11 +21,6 @@ public class AchievementController {
     public List<Achievement> getUserAchievements(
             @PathVariable Long userId) {
 
-        return achievementRepository.findAll();
-    }
-
-    @GetMapping
-    public List<Achievement> getAllAchievements() {
-        return achievementRepository.findAll();
+        return achievementRepository.findByUserId(userId);
     }
 }

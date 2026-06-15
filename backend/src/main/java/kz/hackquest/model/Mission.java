@@ -21,16 +21,15 @@ public class Mission {
     @Column(length = 2000)
     private String description;
 
+    private String category;
+
     private String difficulty;
 
-    private Integer xpReward;
+    private Integer xp;
 
     private Integer duration;
 
-    private Boolean enabled;
+    private Boolean completed;
 
-    @PrePersist
-    public void onCreate() {
-        if (enabled == null) enabled = true;
-    }
+    private Boolean unlocked;
 }

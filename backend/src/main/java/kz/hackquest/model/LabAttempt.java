@@ -1,16 +1,10 @@
 package kz.hackquest.model;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "lab_attempts")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class LabAttempt {
 
     @Id
@@ -21,15 +15,65 @@ public class LabAttempt {
 
     private Long labId;
 
-    @Column(length = 2000)
+     @Column(length = 2000)
     private String payload;
 
-    private Boolean success;
+    private boolean success;
+
+    private Integer earnedPoints;
 
     private LocalDateTime createdAt;
 
     @PrePersist
     public void onCreate() {
-        if (createdAt == null) createdAt = LocalDateTime.now();
+        createdAt = LocalDateTime.now();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getLabId() {
+        return labId;
+    }
+
+    public void setLabId(Long labId) {
+        this.labId = labId;
+    }
+
+    public String getPayload() {
+        return payload;
+    }
+
+    public void setPayload(String payload) {
+        this.payload = payload;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public Integer getEarnedPoints() {
+        return earnedPoints;
+    }
+
+    public void setEarnedPoints(Integer earnedPoints) {
+        this.earnedPoints = earnedPoints;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 }

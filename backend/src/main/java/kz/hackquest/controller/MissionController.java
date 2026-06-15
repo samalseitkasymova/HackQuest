@@ -22,7 +22,8 @@ public class MissionController {
 
     @PostMapping
     public Mission createMission(@RequestBody Mission mission) {
-        if (mission.getEnabled() == null) mission.setEnabled(true);
+        if (mission.getCompleted() == null) mission.setCompleted(false);
+        if (mission.getUnlocked() == null) mission.setUnlocked(true);
         return missionRepository.save(mission);
     }
 
