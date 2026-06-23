@@ -159,7 +159,7 @@ const handleRunCode = () => {
               <div>
                 <h3 className="text-[#00FF9D] font-semibold mb-2">Target Information:</h3>
                 <div className="bg-[#151B2E] rounded-lg p-4 font-mono text-sm">
-                  <div>URL: https://vulnerable-app.cybergame.io/login</div>
+                  <div>URL: https://vulnerable-app.HackQuest.io/login</div>
                   <div>Database: MySQL 5.7</div>
                   <div>Backend: PHP 7.4</div>
                 </div>

@@ -25,7 +25,7 @@ export default function DashboardLayout() {
           <Link to="/" className="flex items-center gap-2">
             <Shield className="w-8 h-8 text-[#00F5FF]" />
             <span className="text-xl font-bold bg-gradient-to-r from-[#00F5FF] to-[#7B61FF] bg-clip-text text-transparent">
-              CyberGame
+              HackQuest
             </span>
           </Link>
         </div>

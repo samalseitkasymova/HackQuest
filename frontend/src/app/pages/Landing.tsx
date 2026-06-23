@@ -34,7 +34,7 @@ export default function Landing() {
           <div className="flex items-center gap-2">
             <Shield className="w-8 h-8 text-[#00F5FF]" />
             <span className="text-2xl font-bold bg-gradient-to-r from-[#00F5FF] to-[#7B61FF] bg-clip-text text-transparent">
-              CyberGame
+              HackQuest
             </span>
           </div>
           <Link to="/login">
@@ -54,7 +54,7 @@ export default function Landing() {
         >
           <h1 className="text-6xl md:text-7xl font-bold mb-6 leading-tight">
             <span className="bg-gradient-to-r from-[#00F5FF] via-[#7B61FF] to-[#00FF9D] bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(0,245,255,0.5)]">
-              CyberGame
+              HackQuest
             </span>
             <br />
             <span className="text-white">Master Cybersecurity</span>
@@ -192,7 +192,7 @@ export default function Landing() {
       {/* Footer */}
       <footer className="relative z-10 border-t border-[#7B61FF]/20 bg-[#0B0F1A]/80 backdrop-blur-sm py-8">
         <div className="container mx-auto px-6 text-center text-gray-400">
-          <p>© 2026 CyberGame. Master cybersecurity through gamification.</p>
+          <p>© 2026 HackQuest. Master cybersecurity through gamification.</p>
         </div>
       </footer>
     </div>

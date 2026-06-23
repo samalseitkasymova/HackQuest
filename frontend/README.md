@@ -1,7 +1,7 @@
 
-  # CyberGame Platform Design
+  # HackQuest Platform Design
 
-  This is a code bundle for CyberGame Platform Design. The original project is available at https://www.figma.com/design/E7Tb9MkJxWBEh9WGO4lo4H/CyberGame-Platform-Design.
+  This is a code bundle for HackQuest Platform Design. The original project is available at https://www.figma.com/design/E7Tb9MkJxWBEh9WGO4lo4H/HackQuest-Platform-Design.
 
   ## Running the code
 

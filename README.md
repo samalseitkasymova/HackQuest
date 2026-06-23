@@ -1,4 +1,4 @@
-# HackQuest / CyberGame Full Project
+# HackQuest / HackQuest Full Project
 
 Полноценный дипломный проект: React frontend из Figma-дизайна + Java Spring Boot backend + база данных.
 

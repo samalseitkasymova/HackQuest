@@ -5,7 +5,6 @@ kz\hackquest\service\AuthService.class
 kz\hackquest\service\AchievementService.class
 kz\hackquest\config\SecurityConfig.class
 kz\hackquest\controller\UserController.class
-kz\hackquest\model\LabAttempt$LabAttemptBuilder.class
 kz\hackquest\controller\MissionController.class
 kz\hackquest\model\Question.class
 kz\hackquest\controller\LabAttemptController.class
@@ -14,13 +13,11 @@ kz\hackquest\model\Score$ScoreBuilder.class
 kz\hackquest\model\User.class
 kz\hackquest\dto\RegisterRequest.class
 kz\hackquest\dto\ScoreRequest.class
-kz\hackquest\model\Lab$LabBuilder.class
 kz\hackquest\repository\LabRepository.class
 kz\hackquest\dto\AuthResponse.class
 kz\hackquest\model\User$UserBuilder.class
 kz\hackquest\model\Mission$MissionBuilder.class
 kz\hackquest\controller\LabController.class
-kz\hackquest\model\Achievement$AchievementBuilder.class
 kz\hackquest\HackQuestApplication.class
 kz\hackquest\repository\UserRepository.class
 kz\hackquest\model\Score.class
